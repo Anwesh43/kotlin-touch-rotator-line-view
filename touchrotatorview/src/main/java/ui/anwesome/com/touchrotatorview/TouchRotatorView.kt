@@ -78,5 +78,24 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             }
         }
     }
-
+    data class TouchRotatorContainer(var w:Float,var h:Float,var deg:Float = 0f) {
+        var line = TouchRotatorContainer(w/2,h/2,Math.min(w,h)/3)
+        fun updateDeg() {
+            if(deg < 360) {
+                deg+=5
+            }
+        }
+        fun draw(canvas:Canvas,paint:Paint) {
+            paint.color = Color.GREEN
+            paint.strokeWidth = Math.min(w,h)/30
+            paint.strokeCap = Paint.Cap.ROUND
+            canvas.drawLine(w/10,4*h/5,w+0.8f*w*(deg.toFloat())/360,4*h/5,paint)
+        }
+        fun update(stopcb:(Float)->Unit) {
+            line.update(stopcb)
+        }
+        fun startUpdating(startcb:()->Unit) {
+            line.startUpdating(startcb)
+        }
+    }
 }
