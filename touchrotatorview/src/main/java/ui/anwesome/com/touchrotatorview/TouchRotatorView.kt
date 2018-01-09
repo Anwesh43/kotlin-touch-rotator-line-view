@@ -3,6 +3,7 @@ package ui.anwesome.com.touchrotatorview
 /**
  * Created by anweshmishra on 09/01/18.
  */
+import android.app.Activity
 import android.content.*
 import android.graphics.*
 import android.view.*
@@ -136,6 +137,13 @@ class TouchRotatorView(ctx:Context):View(ctx) {
                     animator.startAnimating()
                 }
             }
+        }
+    }
+    companion object {
+        fun create(activity:Activity):TouchRotatorView {
+            val view = TouchRotatorView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
