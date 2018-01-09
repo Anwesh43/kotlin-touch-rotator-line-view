@@ -39,4 +39,22 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             }
         }
     }
+    class TouchRotator(var x:Float,var y:Float,var w:Float,var deg:Float = 0f,var dest:Float = 0f) {
+        fun update(stopcb:(Float)->Unit) {
+
+        }
+        fun draw(canvas:Canvas,paint:Paint) {
+            paint.color = Color.YELLOW
+            paint.strokeWidth = w/30
+            paint.strokeCap = Paint.Cap.ROUND
+            canvas.save()
+            canvas.translate(x,y)
+            canvas.rotate(deg)
+            canvas.drawLine(0f,0f,w,0f,paint)
+            canvas.restore()
+        }
+        fun startUpdating(deg:Float,startcb:()->Unit) {
+            dest = deg
+        }
+    }
 }
