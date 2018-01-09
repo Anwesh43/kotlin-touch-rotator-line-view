@@ -90,12 +90,49 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             paint.strokeWidth = Math.min(w,h)/30
             paint.strokeCap = Paint.Cap.ROUND
             canvas.drawLine(w/10,4*h/5,w+0.8f*w*(deg.toFloat())/360,4*h/5,paint)
+            line.draw(canvas,paint)
         }
         fun update(stopcb:(Float)->Unit) {
             line.update(stopcb)
         }
         fun startUpdating(startcb:()->Unit) {
             line.startUpdating(startcb)
+        }
+    }
+    data class TouchRotatorRenderer(var view:TouchRotatorView,var time:Int = 0) {
+        var container:TouchRotatorContainer?=null
+        var animator = Animator(view)
+        var updateDegFn:()->Unit = {
+            container?.updateDeg()
+        }
+        var updateLineFn:()->Unit = {
+            container?.update{
+                animator.stop()
+            }
+        }
+        var curr:()->Unit  = updateDegFn
+        fun render(canvas:Canvas,paint:Paint) {
+            if(time == 0) {
+                val w = canvas.width.toFloat()
+                val h = canvas.height.toFloat()
+                container = TouchRotatorContainer(w,h)
+            }
+            container?.draw(canvas,paint)
+            time++
+            animator.animate(curr)
+        }
+        fun handleTap(event:MotionEvent) {
+            when(event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    curr = updateDegFn
+                    animator.startAnimating()
+                }
+                MotionEvent.ACTION_UP -> {
+                    curr = updateLineFn
+                    animator.stop()
+                    animator.startAnimating()
+                }
+            }
         }
     }
 }
