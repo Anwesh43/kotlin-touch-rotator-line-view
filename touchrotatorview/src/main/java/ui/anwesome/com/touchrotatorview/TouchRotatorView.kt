@@ -8,10 +8,13 @@ import android.graphics.*
 import android.view.*
 class TouchRotatorView(ctx:Context):View(ctx) {
     val paint:Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val renderer = TouchRotatorRenderer(this)
     override fun onDraw(canvas:Canvas) {
-
+        canvas.drawColor(Color.parseColor("#212121"))
+        renderer.render(canvas,paint)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
+        renderer.handleTap(event)
         return true
     }
     class Animator(var view:TouchRotatorView,var animated:Boolean = false) {
