@@ -43,7 +43,7 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             }
         }
     }
-    class TouchRotator(var x:Float,var y:Float,var w:Float,var deg:Float = 0f,var dest:Float = 0f) {
+    class TouchRotator(var x:Float,var y:Float,var w:Float,var deg:Float = 0f) {
         val state = State()
         fun update(stopcb:(Float)->Unit) {
             state.update(stopcb)
@@ -54,14 +54,14 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             paint.strokeCap = Paint.Cap.ROUND
             canvas.save()
             canvas.translate(x,y)
-            canvas.rotate(deg)
+            canvas.rotate(deg*state.scale)
             canvas.drawLine(0f,0f,w,0f,paint)
             canvas.restore()
         }
         fun startUpdating(deg:Float,startcb:()->Unit) {
             state.startUpdating {
                 startcb()
-                dest = deg
+                this.deg = deg
             }
         }
     }
@@ -70,9 +70,12 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             scale += dir*0.1f
             if(Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
-                dir = 0f
+                dir*=-1
                 prevScale = scale
-                stopcb(scale)
+                if(prevScale == 0f) {
+                    dir = 0f
+                    stopcb(scale)
+                }
             }
         }
         fun startUpdating(startcb:()->Unit) {
@@ -83,7 +86,7 @@ class TouchRotatorView(ctx:Context):View(ctx) {
         }
     }
     data class TouchRotatorContainer(var w:Float,var h:Float,var deg:Float = 0f) {
-        var line = TouchRotatorContainer(w/2,h/2,Math.min(w,h)/3)
+        var line = TouchRotator(w/2,h/2,Math.min(w,h)/3)
         fun updateDeg() {
             if(deg < 360) {
                 deg+=5
@@ -93,14 +96,17 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             paint.color = Color.GREEN
             paint.strokeWidth = Math.min(w,h)/30
             paint.strokeCap = Paint.Cap.ROUND
-            canvas.drawLine(w/10,4*h/5,w+0.8f*w*(deg.toFloat())/360,4*h/5,paint)
+            canvas.drawLine(w/10,4*h/5,w/10+0.8f*w*((deg)/360),4*h/5,paint)
             line.draw(canvas,paint)
         }
         fun update(stopcb:(Float)->Unit) {
-            line.update(stopcb)
+            line.update{
+                deg = 0f
+                stopcb(it)
+            }
         }
         fun startUpdating(startcb:()->Unit) {
-            line.startUpdating(startcb)
+            line.startUpdating(deg,startcb)
         }
     }
     data class TouchRotatorRenderer(var view:TouchRotatorView,var time:Int = 0) {
@@ -132,9 +138,11 @@ class TouchRotatorView(ctx:Context):View(ctx) {
                     animator.startAnimating()
                 }
                 MotionEvent.ACTION_UP -> {
-                    curr = updateLineFn
-                    animator.stop()
-                    animator.startAnimating()
+                    container?.startUpdating {
+                        curr = updateLineFn
+                        animator.stop()
+                        animator.startAnimating()
+                    }
                 }
             }
         }
