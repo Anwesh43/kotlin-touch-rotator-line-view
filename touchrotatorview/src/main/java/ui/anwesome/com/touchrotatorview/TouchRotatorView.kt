@@ -14,4 +14,29 @@ class TouchRotatorView(ctx:Context):View(ctx) {
     override fun onTouchEvent(event:MotionEvent):Boolean {
         return true
     }
+    class Animator(var view:TouchRotatorView,var animated:Boolean = false) {
+        fun animate(updatecb:()->Unit){
+            if(animated) {
+                updatecb()
+                try {
+                    Thread.sleep(50)
+                    view.invalidate()
+                }
+                catch(ex:Exception) {
+
+                }
+            }
+        }
+        fun stop() {
+            if(animated) {
+                animated = false
+            }
+        }
+        fun startAnimating() {
+            if(!animated) {
+                animated = true
+                view.postInvalidate()
+            }
+        }
+    }
 }
