@@ -40,8 +40,9 @@ class TouchRotatorView(ctx:Context):View(ctx) {
         }
     }
     class TouchRotator(var x:Float,var y:Float,var w:Float,var deg:Float = 0f,var dest:Float = 0f) {
+        val state = State()
         fun update(stopcb:(Float)->Unit) {
-
+            state.update(stopcb)
         }
         fun draw(canvas:Canvas,paint:Paint) {
             paint.color = Color.YELLOW
@@ -54,7 +55,10 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             canvas.restore()
         }
         fun startUpdating(deg:Float,startcb:()->Unit) {
-            dest = deg
+            state.startUpdating {
+                startcb()
+                dest = deg
+            }
         }
     }
     class State(var scale:Float = 0f,var dir:Float = 0f,var prevScale:Float = 0f) {
@@ -74,5 +78,5 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             }
         }
     }
-    
+
 }
