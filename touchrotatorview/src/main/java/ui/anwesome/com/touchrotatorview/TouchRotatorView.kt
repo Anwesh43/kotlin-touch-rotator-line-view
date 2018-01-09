@@ -64,6 +64,7 @@ class TouchRotatorView(ctx:Context):View(ctx) {
                 scale = prevScale + dir
                 dir = 0f
                 prevScale = scale
+                stopcb(scale)
             }
         }
         fun startUpdating(startcb:()->Unit) {
@@ -73,4 +74,5 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             }
         }
     }
+    
 }
