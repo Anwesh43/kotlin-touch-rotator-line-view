@@ -58,6 +58,9 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             canvas.drawLine(0f,0f,w,0f,paint)
             canvas.restore()
         }
+        fun executeFn(cb:(Float)->Unit) {
+            cb(state.scale*(deg/360))
+        }
         fun startUpdating(deg:Float,startcb:()->Unit) {
             state.startUpdating {
                 startcb()
@@ -98,7 +101,10 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             paint.strokeCap = Paint.Cap.ROUND
             canvas.drawLine(w/10,4*h/5,w/10+0.8f*w*((deg)/360),4*h/5,paint)
             line.draw(canvas,paint)
-            canvas.drawTwoSidedLine(w/2,h/5,w/2,line.state.scale*(deg/360),paint)
+            line.executeFn { scale ->
+                canvas.drawTwoSidedLine(w/2,h/5,w/2,scale,paint)
+                canvas.drawScaledArc(w/2,3*h/5,h/20,scale,paint)
+            }
         }
         fun update(stopcb:(Float)->Unit) {
             line.update{
@@ -166,4 +172,7 @@ fun Canvas.drawTwoSidedLine(x:Float,y:Float,w:Float,scale:Float,paint:Paint) {
         drawLine(0f,0f,w*scale,0f,paint)
         restore()
     }
+}
+fun Canvas.drawScaledArc(x:Float,y:Float,r:Float,scale:Float,paint:Paint) {
+    drawArc(RectF(x-r,y-r,x+r,y+r),0f,360*scale,true,paint)
 }
