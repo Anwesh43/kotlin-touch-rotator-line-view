@@ -155,3 +155,14 @@ class TouchRotatorView(ctx:Context):View(ctx) {
         }
     }
 }
+fun Canvas.drawTwoSidedLine(x:Float,y:Float,w:Float,scale:Float,paint:Paint) {
+    paint.strokeWidth = w/20
+    paint.strokeCap = Paint.Cap.ROUND
+    for(i in 0..1) {
+        save()
+        translate(x, y)
+        scale(i*2-1f,1f)
+        drawLine(0f,0f,w*scale,0f,paint)
+        restore()
+    }
+}
