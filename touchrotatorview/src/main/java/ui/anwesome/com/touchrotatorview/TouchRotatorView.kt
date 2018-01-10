@@ -10,9 +10,13 @@ import android.view.*
 class TouchRotatorView(ctx:Context):View(ctx) {
     val paint:Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = TouchRotatorRenderer(this)
+    var onRotateStopListener:OnRotateStopListener ?= null
     override fun onDraw(canvas:Canvas) {
         canvas.drawColor(Color.parseColor("#212121"))
         renderer.render(canvas,paint)
+    }
+    fun addOnRotateStopListener(onStopListener:()->Unit) {
+        onRotateStopListener = OnRotateStopListener(onStopListener)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
         renderer.handleTap(event)
@@ -125,6 +129,7 @@ class TouchRotatorView(ctx:Context):View(ctx) {
         var updateLineFn:()->Unit = {
             container?.update{
                 animator.stop()
+                view.onRotateStopListener?.onStopListener?.invoke()
             }
         }
         var curr:()->Unit  = updateDegFn
@@ -161,6 +166,7 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             return view
         }
     }
+    data class OnRotateStopListener(var onStopListener:()->Unit)
 }
 fun Canvas.drawTwoSidedLine(x:Float,y:Float,w:Float,scale:Float,paint:Paint) {
     paint.strokeWidth = w/20
