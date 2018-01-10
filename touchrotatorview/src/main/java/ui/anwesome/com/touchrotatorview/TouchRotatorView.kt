@@ -98,6 +98,7 @@ class TouchRotatorView(ctx:Context):View(ctx) {
             paint.strokeCap = Paint.Cap.ROUND
             canvas.drawLine(w/10,4*h/5,w/10+0.8f*w*((deg)/360),4*h/5,paint)
             line.draw(canvas,paint)
+            canvas.drawTwoSidedLine(w/2,h/5,w/2,line.state.scale*(deg/360),paint)
         }
         fun update(stopcb:(Float)->Unit) {
             line.update{
